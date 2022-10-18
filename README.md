@@ -20,7 +20,7 @@
 
 - python3.8 -m venv venv
     - source env/bin/activate
-    - pip -r ./modelv0.1/requirements.txt
+    - pip install -r ./modelv0.1/requirements.txt
 ```
 
 ## Ejecución de la demo:
