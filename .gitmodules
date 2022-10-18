@@ -1,0 +1,6 @@
+[submodule "server/MonaServer2"]
+	path = server/MonaServer2
+	url = https://github.com/MonaSolutions/MonaServer2
+[submodule "server/luajit-2.0"]
+	path = server/luajit-2.0
+	url = https://github.com/LuaJIT/LuaJIT
