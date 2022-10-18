@@ -29,7 +29,6 @@ import os
 import platform
 import sys
 from pathlib import Path
-
 import torch
 import torch.backends.cudnn as cudnn
 
@@ -45,6 +44,41 @@ from utils.general import (LOGGER, Profile, check_file, check_img_size, check_im
                            increment_path, non_max_suppression, print_args, scale_coords, strip_optimizer, xyxy2xywh)
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
+
+def transparentOverlay(src, overlay, pos=(0, 0), scale=1):
+    """
+    :param src: Input Color Background Image
+    :param overlay: transparent Image (BGRA)
+    :param pos:  position where the image to be blit.
+    :param scale : scale factor of transparent image.
+    :return: Resultant Image
+    """
+    overlay = cv2.resize(overlay, (0, 0), fx=scale, fy=scale)
+    h, w, _ = overlay.shape  # Size of foreground
+    rows, cols, _ = src.shape  # Size of background Image
+    y, x = pos[0], pos[1]  # Position of foreground/overlay image
+    # loop over all pixels and apply the blending equation
+    for i in range(h):
+        for j in range(w):
+            if x + i >= rows or y + j >= cols:
+                continue
+            alpha = float(overlay[i][j][3] / 255.0)  # read the alpha channel
+            src[x + i][y + j] = alpha * overlay[i][j][:3] + (1 - alpha) * src[x + i][y + j]
+    return src
+
+def addImageWatermark(LogoImage,MainImage,opacity,pos=(10,100),):
+    opacity = opacity / 100
+
+    tempImg = MainImage.copy()
+    #print(tempImg.shape)
+    overlay = transparentOverlay(tempImg, LogoImage, pos)
+    output = MainImage.copy()
+
+    # apply the overlay
+    cv2.addWeighted(overlay, opacity, output, 1 - opacity, 0, output)
+
+    return output
+
 
 
 @smart_inference_mode()
@@ -144,6 +178,8 @@ def run(
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
+            trigger = 0
+
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(im.shape[2:], det[:, :4], im0.shape).round()
@@ -155,6 +191,7 @@ def run(
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
+                    trigger = 1
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
@@ -169,13 +206,24 @@ def run(
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
             # Stream results
-            im0 = annotator.result()
+            final = annotator.result()
+            if trigger == 1:
+                logo = cv2.imread('./models/logo/inr_logo_rouge.png', cv2.IMREAD_UNCHANGED)
+                scale_percent = 10 # percent of original size
+                width = int(logo.shape[1] * scale_percent / 100)
+                height = int(logo.shape[0] * scale_percent / 100)
+                dim = (width, height)
+
+                # resize image
+                logo_resized = cv2.resize(logo, dim, interpolation = cv2.INTER_AREA)
+                final = addImageWatermark(logo_resized, im0,70,(10,10))
+
             if view_img:
                 if platform.system() == 'Linux' and p not in windows:
                     windows.append(p)
                     cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
                     cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
-                cv2.imshow(str(p), im0)
+                cv2.imshow(str(p), final)
                 cv2.waitKey(1)  # 1 millisecond
 
             # Save results (image with detections)
