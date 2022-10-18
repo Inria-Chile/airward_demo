@@ -30,5 +30,5 @@
 4. Se debe ejecutar la aplicación DJI GO.
 5. En la aplicación DJI GO, se deben realizar los siguientes pasos: ir al Menú principal (parte superior derecha); seleccionar la opción "Select Live Broadcast Plataform" y elegir la opción RTMP; posteriormente en la ventana "create custom Live Broadcast", se debe ingresar el texto “rtmp://<IP unidad de procesamiento>:1935/live”; finalmente se debe presionar el botón de inicio de la transmisión.
 6. La cámara del drone debe estar enfocando al monitor en donde se esté reproduciendo el archivo "test_video.mp4".  
-7. Ejecutar en el entorno virtual de python el comando: "python3 ./modelv0.1/detect.py --source "rtmp://0.0.0.0:1935/live" --weights best.pt"
+7. Ejecutar en el entorno virtual de python el comando: "python3 ./modelv0.1/detect.py --source "rtmp://0.0.0.0:1935/live" --weights ./modelv0.1/best.pt"
 9. Visualizar en la ventana de resultados la detección realizada por el modelo mediante el conjunto de bounding boxes con su etiqueta (fire o smoke) e índice de confianza respectivo.
