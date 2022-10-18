@@ -1,4 +1,4 @@
-# Intrucciones para la ejecución DEMO – Proyecto AirWard
+# Instrucciones para la ejecución DEMO – Proyecto AirWard
 
 ## Requerimientos:
 - Dispositivo externo de visualización (teléfono móvil o tablet) con la app DJI Go 4.0 instalada.
