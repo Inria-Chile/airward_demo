@@ -27,7 +27,7 @@
 1. Ejecutar en la unidad de procesamiento "sudo ./server/MonaServer2/MonaServer/MonaServer
 2. En la unidad de procesamiento se debe chequear la IP (por ejemplo: 192.168.0.101).
 3. El dispositivo externo debe estar conectado a la misma red que la unidad de procesamiento, y se debe chequear que la IP tenga el mismo segmento (por ejemplo: 192.168.0.102).
-4. Se debe ejecutar la aplicación DJI GO.
+4. Se debe encender el radio-control y el drone. Posteriormente ejecutar la aplicación DJI GO. 
 5. En la aplicación DJI GO, se deben realizar los siguientes pasos: ir al Menú principal (parte superior derecha); seleccionar la opción "Select Live Broadcast Plataform" y elegir la opción RTMP; posteriormente en la ventana "create custom Live Broadcast", se debe ingresar el texto “rtmp://<IP unidad de procesamiento>:1935/live”; finalmente se debe presionar el botón de inicio de la transmisión.
 6. La cámara del drone debe estar enfocando al monitor en donde se esté reproduciendo el archivo "test_video.mp4".  
 7. Ejecutar en el entorno virtual de python el comando: "python3 ./modelv0.1/detect.py --source "rtmp://0.0.0.0:1935/live" --weights ./modelv0.1/best.pt"
